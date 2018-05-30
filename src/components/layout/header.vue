@@ -6,9 +6,14 @@
         <!--<i class="iconfont icon-shouye1" @click="$router.push({path:'/'})"></i>-->
         <i class="iconfont icon-tixing" @click="$router.push({path:'/'})"></i>
       </span>
+      <span>欢迎，</span>
       <el-dropdown>
         <span class="el-dropdown-link">
-          王小虎<i class="el-icon-arrow-down el-icon--right"></i>
+          王小虎
+          <div class="user-img">
+            <img src="@/assets/img/logo_02.png" alt="">
+          </div>
+          <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item @click.native="$router.push({name:'user'})">
@@ -52,7 +57,7 @@
 </script>
 <style scoped lang="scss">
   .el-header {
-    background-color: #B3C0D1;
+    background-color: #00b78c;
     color: #333;
     line-height: 60px;
     font-size: 12px;
@@ -76,6 +81,24 @@
         }
         i:hover{
           color: cyan;
+        }
+      }
+    }
+    .el-dropdown-link{
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      .user-img{
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-left: 10px;
+        border:1px solid #ccc;
+        overflow: hidden;
+        box-shadow: 0 0 5px #ccc;
+        img{
+          width: 100%;
+          height: 100%;
         }
       }
     }

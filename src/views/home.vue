@@ -3,7 +3,7 @@
     <div class="left-silder">
       <my-slider :isCollapse="isCollapse"></my-slider>
     </div>
-    <div class="right-main">
+    <div :class="!isCollapse? 'right-main' : 'right-main active'">
       <my-header @collapseFun="handelCollapse"></my-header>
       <el-main>
         <div class="tob-bar">
@@ -49,12 +49,17 @@
     right: 0;
     overflow: hidden;
     display: flex;
+    justify-content: flex-start;
     .left-silder{
       width: auto;
     }
     .right-main{
-      flex: 1;
-      position: relative;
+      position: absolute;
+      left:200px;
+      top:0;
+      right: 0;
+      bottom: 0;
+      transition: left 0.3s linear;
       .el-main{
         height: 100%;
         overflow-y: auto;
@@ -70,6 +75,10 @@
           }
         }
       }
+    }
+    .right-main.active{
+      left:64px;
+      transition: left 0.3s;
     }
   }
 </style>

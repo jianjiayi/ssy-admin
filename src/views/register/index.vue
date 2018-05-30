@@ -175,7 +175,7 @@
 </script>
 <style scoped lang="scss">
   .bg-body{
-    background: #f2f2f240;
+    background: #d7deda;
     padding-top: 100px;
     .content{
       min-height: 700px;

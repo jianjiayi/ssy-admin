@@ -1,8 +1,8 @@
 <template>
-  <section>
+  <section style="max-width: 100%;min-height: 400px">
     <el-table
       :data="listTableData"
-      style="width: 100%;min-height: 400px">
+      style="max-width: 100%;min-height: 400px">
       <el-table-column
         label="商品ID"
         prop="id"

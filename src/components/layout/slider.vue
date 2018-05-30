@@ -1,7 +1,7 @@
 <template>
-  <el-aside width="auto" style="background-color: rgb(238, 241, 246)">
+  <el-aside width="auto">
     <div :class="isCollapse ? 'logo min-logo' : 'logo'">
-      <img src="@/assets/logo.png" alt="">
+      <img src="@/assets/img/logo_03.png" alt="">
     </div>
     <el-menu
       class="el-menu"
@@ -71,16 +71,65 @@
     height: 100%;
     overflow-y: auto;
     color: #333;
+    background: #ffffff;
+    border-right: 1px solid #CCCCCC;
     .logo{
-      width: 200px;
+      width: 176px;
+      padding: 10px 12px;
       transition: width 0.5s linear;
       img{
-        width: 100%;
+        width: 150px;
       }
     }
     .min-logo{
-      width: 64px;
+      width: 40px;
+      padding: 10px 12px;
       transition: width 0.3s;
+    }
+    .el-menu{
+      background-color: transparent;
+      border-right: none;
+      .el-submenu{
+        .el-submenu__title{
+          display: flex;
+          display: -webkit-flex;
+          align-items: center;
+          -webkit-align-items: center;
+          color: #140000;
+          i{
+            font-size: 24px;
+            color: #606266;
+            margin-right: 5px;
+          }
+        }
+        .el-menu-item{
+          position: relative;
+          background: #E9E9E9;
+          color: #140000;
+          font-size: 14px;
+        }
+        .el-menu-item{
+          i{
+            font-size: 18px;
+            margin-right: 5px;
+          }
+        }
+        .el-menu-item a{
+          color: #140000;
+          font-size: 14px;
+        }
+        .el-menu-item.is-active,
+        .el-menu-item.is-active a{
+          color: #23C09B;
+        }
+        .el-menu-item:last-child{
+          border-bottom: none;
+          padding-bottom: 10px;
+        }
+      }
+      .el-submenu.is-opened{
+        background: #E9E9E9;
+      }
     }
     .el-menu:not(.el-menu--collapse) {
       width: 200px;
@@ -90,7 +139,7 @@
       .is-active{
         i.iconfont{
           font-size:25px;
-          color: red;
+          color: #00b78c;
         }
       }
     }
