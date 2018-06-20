@@ -10,6 +10,10 @@
           <span class="name">上实源后台管理</span>
         </div>
       </router-link>
+
+      <div class="title">
+        {{$route.meta.name}}
+      </div>
     </div>
   </el-header>
 </template>
@@ -34,13 +38,17 @@
     top:0;
     left:0;
     width: 100%;
-    z-index: 999;
+    z-index: 999999;
     background-color: #00b78c;
     .container{
+      position: relative;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       .logo{
+        position: absolute;
+        left:0;
+        top:0;
         display: flex;
         align-items: center;
         .icon{
@@ -58,6 +66,12 @@
           font-size: 16px;
           color: #ffffff;
         }
+      }
+      .title{
+        font-size: 20px;
+        line-height: 60px;
+        color: #ffffff;
+        text-shadow: 0 0 10px #000000;
       }
     }
   }

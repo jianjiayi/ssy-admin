@@ -1,13 +1,13 @@
 <template>
   <div class="steps-bar">
-    <el-steps :active="stepOptions.active">
+    <el-steps :active="active">
       <el-step v-for="(item,index) in stepOptions.options" :key="index" :title="item.title" :icon="item.icon"></el-step>
     </el-steps>
   </div>
 </template>
 <script>
   export default {
-    props:['stepOptions'],
+    props:['stepOptions','active'],
     data(){
       return{
 

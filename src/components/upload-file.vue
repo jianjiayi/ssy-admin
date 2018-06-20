@@ -15,7 +15,7 @@
     props:['options','name'],
     data () {
       return {
-        action:'http://192.168.8.189:8082/NewDwShop/profile/proupload.do',//上传地址
+        action:process.env.API_HOST+'/profile/proupload.do',//上传地址
       }
     },
     methods: {

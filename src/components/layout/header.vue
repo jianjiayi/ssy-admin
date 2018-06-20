@@ -9,9 +9,10 @@
       <span>欢迎，</span>
       <el-dropdown>
         <span class="el-dropdown-link">
-          王小虎
+          {{getUser.nickname}}
           <div class="user-img">
-            <img src="@/assets/img/logo_02.png" alt="">
+            <img v-if="getUser.avatar != ''" :src="getUser.avatar" alt="">
+            <img v-else src="@/assets/img/logo_02.png" alt="">
           </div>
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
@@ -30,7 +31,7 @@
   </el-header>
 </template>
 <script>
-  import { mapMutations } from 'vuex';
+  import { mapMutations, mapGetters } from 'vuex';
   export default {
     data(){
       return{
@@ -42,6 +43,9 @@
         this.$emit('collapseFun',this.isCollapse);
       }
     },
+    computed:{
+      ...mapGetters(['getUser'])
+    },
     methods:{
       ...mapMutations(['clearUser']),
       toggleCollapse(){
@@ -49,8 +53,19 @@
         this.isCollapse = !this.isCollapse;
       },
       logout(){
-        this.clearUser();
-        this.$router.push({path: '/login'});
+        //调用axios上传
+        this.$ajax.post(process.env.API_HOST+'/personal/logout.do',{}).then(res => {
+          console.log(res);
+          let json = res.data
+          if(json.status != 0) return;
+
+          this.clearUser();
+          this.$router.push({path: '/login'});
+
+        }).catch(function (error) {
+          console.log(error);
+        });
+
       }
     }
   }
@@ -62,6 +77,7 @@
     line-height: 60px;
     font-size: 12px;
     display: flex;
+    min-width: 800px;
     justify-content: space-between;
     .iconfont{
       font-size: 30px;

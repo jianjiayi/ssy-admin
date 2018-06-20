@@ -3,7 +3,7 @@
     <div class="login-box">
       <div class="left-box">
         <div class="logo">
-          <img src="@/assets/img/logo.png" alt="">
+          <img src="@/assets/img/logo_0_1.png" alt="">
         </div>
       </div>
       <div class="right-box">
@@ -20,14 +20,15 @@
             status-icon
             :rules="rules"
             ref="ruleForm"
-            class="demo-ruleForm">
-            <el-form-item prop="name">
-              <el-input type="text" v-model="ruleForm.name" auto-complete="off" placeholder="请输入用户名">
+            class="demo-ruleForm"
+            @keyup.enter.native="submitForm('ruleForm')">
+            <el-form-item prop="phone">
+              <el-input type="text" v-model="ruleForm.phone" auto-complete="off" placeholder="请输入用户名">
                 <i slot="prefix" class="iconfont icon-gerenzhongxin"></i>
               </el-input>
             </el-form-item>
-            <el-form-item  prop="pass">
-              <el-input type="password" v-model="ruleForm.pass" auto-complete="off" placeholder="请输入密码">
+            <el-form-item  prop="password">
+              <el-input type="password" v-model="ruleForm.password" auto-complete="off" placeholder="请输入密码">
                 <i slot="prefix" class="iconfont icon-shurumima"></i>
               </el-input>
             </el-form-item>
@@ -35,7 +36,7 @@
               <router-link to="/portal/forget">忘记密码?</router-link>
             </p>
             <el-form-item style="text-align: center">
-              <el-button class="login-btn" type="primary" @click="submitForm('ruleForm')">登录</el-button>
+              <el-button class="login-btn" type="primary" @click="submitForm('ruleForm')" :loading="isBtnLoading">{{btnText}}</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -44,6 +45,7 @@
   </div>
 </template>
 <script>
+  const qs = require('qs');
   import { mapMutations } from 'vuex';
   export default {
     data() {
@@ -55,34 +57,57 @@
         }
       };
       return {
+        isBtnLoading: false,
         ruleForm: {
-          name:'admin',
-          pass: '111111',
+          phone:'17611158859',
+          password: '111111',
         },
         rules: {
-          name:[
+          phone:[
             { required: true, message: '请输入用户名', trigger: 'blur' },
             { validator: validateName, trigger: 'blur' }
           ],
-          pass: [
+          password: [
             { required: true, message: '请输入密码', trigger: 'blur' },
             { min: 6, max: 6, message: '请输入6位密码', trigger: 'blur' }
           ]
         }
       };
     },
+    computed: {
+      btnText() {
+        if (this.isBtnLoading) return '登录中...';
+        return '登录';
+      }
+    },
     methods: {
       ...mapMutations(['setUser']),
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            let user = {
-              name : 'jsp',
-              pawd : '111111',
-              auth : 'sfdjknabsjdbnflsjdfjk'
-            };
-            this.setUser(user);
-            this.$router.push({path: '/'});
+            this.isBtnLoading = true;
+            //调用axios上传
+            this.$ajax.post(process.env.API_HOST+'/personal/PersonalLogin.do',qs.stringify(this.ruleForm)).then(res => {
+              console.log(res)
+              this.isBtnLoading = false;
+              let json = res.data
+              if(json.status != 0){
+                alert(json.mag)
+                return;
+              }
+
+              let item = {
+                user : json.data,
+                token :json.data.sessinid
+              }
+              this.setUser(item);
+              //json.data.verstatus ==40 资质审核通过，否则失败
+              console.log('json.data.verstatus :'+json.data.verstatus )
+              json.data.verstatus == 40 ? this.$router.push({name: 'home'}) :  this.$router.push({name:'auditStatus'});
+
+            }).catch(function (error) {
+              console.log(error);
+            });
           } else {
             console.log('error submit!!');
             return false;

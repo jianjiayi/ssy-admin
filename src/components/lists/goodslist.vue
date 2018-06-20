@@ -94,13 +94,11 @@
         </template>
       </el-table-column>
       <el-table-column
-        fixed="right"
         label="操作"
-        width="80"
         align="center">
         <template slot-scope="scope">
-          <router-link v-if="scope.row.status==4" :to="{path:'/reviewGoods',query: {id:scope.row.id}}" target="_blank">
-            查看
+          <router-link v-if="scope.row.status==4" :to="{path:'/detail/goods',query: {id:scope.row.id}}" target="_blank">
+            详情
           </router-link>
           <el-dropdown v-else>
             <el-button size="mini" icon="el-icon-edit"></el-button>
@@ -109,8 +107,8 @@
               <el-dropdown-item :disabled="scope.row.status == 2 || scope.row.status == 3 || scope.row.status == 6? true : false" @click.native="updateStatus(scope.$index,scope.row.id,2)">下架</el-dropdown-item>
               <el-dropdown-item :disabled="scope.row.status == 3 || scope.row.status == 6 ? true : false" @click.native="updateStatus(scope.$index,scope.row.id,3)">删除</el-dropdown-item>
               <el-dropdown-item>
-                <router-link  :to="{path:'/reviewGoods',query: {id:scope.row.id}}" target="_blank">
-                  <i class="fa fa-eye" aria-hidden="true"></i> 查看
+                <router-link  :to="{path:'/detail/goods',query: {id:scope.row.id}}" target="_blank">
+                  <i class="fa fa-eye" aria-hidden="true"></i> 详情
                 </router-link>
               </el-dropdown-item>
               <el-dropdown-item>
@@ -118,7 +116,6 @@
                   <i class="fa fa-star-half-o" aria-hidden="true"></i> 评价
                 </router-link>
               </el-dropdown-item>
-              <el-dropdown-item :disabled="scope.row.status == 0 || scope.row.status == 6 ? true : false" @click.native="updateStatus(scope.$index,scope.row.id,0)">强制下架</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -217,7 +214,7 @@
     color: #2cca9a;
   }
   .main-img{
-    width: 90px;
+    max-width: 90px;
     height: 50px;
     background: #cccccc;
     display: block;

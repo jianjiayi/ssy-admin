@@ -1,7 +1,7 @@
 <template>
   <el-aside width="auto">
     <div :class="isCollapse ? 'logo min-logo' : 'logo'">
-      <img src="@/assets/img/logo_03.png" alt="">
+      <img src="@/assets/img/logo_03_01.png" alt="">
     </div>
     <el-menu
       class="el-menu"

@@ -25,11 +25,13 @@ Vue.config.productionTip = false;
 router.beforeEach(({meta, path}, from, next) => {
   let { auth = true } = meta;//该路由是否需要登录
 
-  let $user = JSON.parse(sessionStorage.getItem('$user')) || {};
-  let isLogin = Boolean($user.auth);//true用户已登录， false用户未登录
+  let $token = sessionStorage.getItem('$token') || '';
+  let isLogin = Boolean($token);//true用户已登录， false用户未登录
 
   if (!auth && !isLogin && path != '/login') {
-    return next({ path: '/login' })
+    return next({
+      path: '/login'
+    })
   }else{
     next()
   }

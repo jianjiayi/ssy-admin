@@ -11,7 +11,10 @@
             <el-breadcrumb-item v-for="(item,index) in breadcrumbs" :key="index">{{item.meta.name}}</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
-        <router-view></router-view>
+        <dashboard v-if="$route.path=='/'"></dashboard>
+        <transition v-else name="fade-transform" mode="out-in">
+          <router-view></router-view>
+        </transition>
       </el-main>
     </div>
   </el-container>
@@ -19,6 +22,8 @@
 <script>
   import myHeader from '@/components/layout/header.vue';
   import mySlider from '@/components/layout/slider.vue';
+
+  import dashboard from '@/views/dashboard/index.vue';
   export default {
     data() {
       return {
@@ -36,22 +41,34 @@
       }
     },
     components:{
-      myHeader,mySlider
+      myHeader,mySlider,dashboard
     }
   };
 </script>
 <style scoped lang="scss">
+  .fade-enter-active{
+    transition: all 1.5s;
+    transition-delay: 2s;
+  }
+
+  .fade-leave-active{
+    transition: all 2.5s;
+  }
+
+  .fade-enter, .fade-leave-active{
+    opacity: 0;
+  }
   .el-container{
     position: absolute;
     left:0;
     top:0;
     bottom: 0;
     right: 0;
-    overflow: hidden;
     display: flex;
     justify-content: flex-start;
     .left-silder{
       width: auto;
+      z-index: 99;
     }
     .right-main{
       position: absolute;
@@ -59,9 +76,15 @@
       top:0;
       right: 0;
       bottom: 0;
+      overflow-x: auto;
       transition: left 0.3s linear;
       .el-main{
-        height: 100%;
+        position: absolute;
+        top:60px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+        min-width: 800px;
         overflow-y: auto;
         padding: 10px 20px 20px 20px;
         .tob-bar{

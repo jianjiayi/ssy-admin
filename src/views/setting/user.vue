@@ -1,6 +1,6 @@
 <template>
   <div class="user">
-    <el-form :model="info" label-position="left" label-width="100px">
+    <el-form :model="info" label-position="left" label-width="120px">
       <el-form-item label="头像 :">
         <div class="item">
           <div class="txt">
@@ -15,10 +15,43 @@
         </div>
       </el-form-item>
 
+      <el-form-item label="商户名称 :">
+        <div class="item">
+          <div class="txt">
+            <p class="">{{info.admname}}</p>
+          </div>
+        </div>
+      </el-form-item>
+
+      <el-form-item label="商户ID :">
+        <div class="item">
+          <div class="txt">
+            <p class="">
+              {{info.admnum}}
+            </p>
+          </div>
+        </div>
+      </el-form-item>
+
+      <el-form-item label="商户类型 :">
+        <div class="item">
+          <div class="txt">
+            <p class="">
+              <el-tag
+                :type="info.role == 2 ? 'success' : 'danger'"
+                close-transition
+                size="mini">
+                {{info.role | typeStatus}}
+              </el-tag>
+            </p>
+          </div>
+        </div>
+      </el-form-item>
+
       <el-form-item label="商户昵称 :">
         <div class="item">
           <div class="txt">
-            <p class="">{{info.nickname}}</p>
+            <p class="">{{info.nickname | emptyFun}}</p>
           </div>
           <span class="btn">
             <i class="iconfont icon-bianji" @click="handleEdit('商户昵称','nickname',info.nickname)"></i>
@@ -26,21 +59,23 @@
         </div>
       </el-form-item>
 
-      <el-form-item label="商户ID :">
-        <div class="item">
-          <div class="txt">
-            <p class="">{{info.admnum}}</p>
-          </div>
-        </div>
-      </el-form-item>
-
       <el-form-item label="绑定手机号 :">
         <div class="item">
           <div class="txt">
-            <p class="">{{info.phone}}</p>
+            <p class="">{{info.phone | emptyFun}}</p>
           </div>
           <span class="btn">
-            <i class="iconfont icon-bianji" @click="handleEdit('绑定手机号','phone',info.phone)"></i>
+            <i class="iconfont icon-bianji" @click="handleTelEdit('绑定手机号','phone',info.phone)"></i>
+          </span>
+        </div>
+      </el-form-item>
+      <el-form-item label="绑定邮箱 :">
+        <div class="item">
+          <div class="txt">
+            <p class="">{{info.email | emptyFun}}</p>
+          </div>
+          <span class="btn">
+            <i class="iconfont icon-bianji" @click="handleEdit('绑定邮箱','email',info.email)"></i>
           </span>
         </div>
       </el-form-item>
@@ -67,6 +102,28 @@
         </div>
       </el-form-item>
 
+      <el-form-item label="发货人姓名 :">
+        <div class="item">
+          <div class="txt">
+            <p class="">{{ info.inname | emptyFun}}</p>
+          </div>
+          <span class="btn">
+            <i class="iconfont icon-bianji" @click="handleEdit('发货人','inname',info.inname)"></i>
+          </span>
+        </div>
+      </el-form-item>
+
+      <el-form-item label="发货人联系电话 :">
+        <div class="item">
+          <div class="txt">
+            <p class="">{{ info.inphone | emptyFun}}</p>
+          </div>
+          <span class="btn">
+            <i class="iconfont icon-bianji" @click="handleTelEdit('发货人联系电话','inphone',info.inphone)"></i>
+          </span>
+        </div>
+      </el-form-item>
+
       <el-form-item label="发货地址 :">
         <div class="item">
           <div class="txt">
@@ -74,6 +131,28 @@
           </div>
           <span class="btn">
             <i class="iconfont icon-bianji" @click="handleEdit('发货地址','outaddress',info.outaddress)"></i>
+          </span>
+        </div>
+      </el-form-item>
+
+      <el-form-item label="退件收货人 :">
+        <div class="item">
+          <div class="txt">
+            <p class="">{{ info.outname | emptyFun}}</p>
+          </div>
+          <span class="btn">
+            <i class="iconfont icon-bianji" @click="handleEdit('退件收货人','outname',info.outname)"></i>
+          </span>
+        </div>
+      </el-form-item>
+
+      <el-form-item label="退件咨询电话 :">
+        <div class="item">
+          <div class="txt">
+            <p class="">{{ info.outphone | emptyFun}}</p>
+          </div>
+          <span class="btn">
+            <i class="iconfont icon-bianji" @click="handleTelEdit('退件咨询电话','outphone',info.outphone)"></i>
           </span>
         </div>
       </el-form-item>
@@ -100,13 +179,13 @@
         </div>
       </el-form-item>
 
-      <el-form-item label="联系电话 :">
+      <el-form-item label="店铺联系电话 :">
         <div class="item">
           <div class="txt">
             <p class="">{{ info.telenumber | emptyFun}}</p>
           </div>
           <span class="btn">
-            <i class="iconfont icon-bianji" @click="handleEdit('联系电话','telenumber',info.telenumber)"></i>
+            <i class="iconfont icon-bianji" @click="handleTelEdit('联系电话','telenumber',info.telenumber)"></i>
           </span>
         </div>
       </el-form-item>
@@ -120,6 +199,22 @@
       <vue-cropper ref="child" :Options="cropperOption" :Name="cropperName" @uploadImgSuccess="handleUploadSuccess"></vue-cropper>
     </el-dialog>
 
+    <el-dialog
+      title="校验登录密码"
+      :visible.sync="checkLoginModel"
+      width="300px"
+      :center="true"
+      :show-close="false">
+      <check-login  @checkLogin="checkLogin"></check-login>
+    </el-dialog>
+
+    <el-dialog
+      :title="'修改'+modelForm.label"
+      :visible.sync="editTelModel"
+      width="450px"
+      :center="true">
+      <edit-tel @editTelSubmit="editTelSubmit"></edit-tel>
+    </el-dialog>
 
 
     <el-dialog
@@ -142,7 +237,13 @@
   </div>
 </template>
 <script>
+  const qs = require('qs');
   import vueCropper from '@/components/vue-cropper.vue';
+  import checkLogin from '@/components/checkLogin.vue';
+
+  import editTel from '@/components/editTel.vue';
+
+  import { mapMutations } from 'vuex'
   export default {
     data () {
       return {
@@ -175,6 +276,10 @@
           returnPolicy:'上岛咖啡美国开始的风格',//退货说明
           telenumber:'13121378101',//联系电话
         },
+        //登录验证码
+        checkLoginModel:false,
+        //修改手机号
+        editTelModel:false,
         //修改数据
         modelActive:false,
         modelForm:{
@@ -191,37 +296,117 @@
       }
     },
     filters:{
+      typeStatus(type){
+        let status = '';
+        type === 2 ? status = '个人' : status = '企业';
+        return status;
+      },
       emptyFun(val){
         let str = '';
-        (val === null || val ==='') ? str = '暂无信息' : str = val;
+        (val === null || val ==='' || val === undefined) ? str = '暂无信息' : str = val;
         return str;
       }
     },
+    created(){
+      this.loadData()
+    },
     methods:{
+      ...mapMutations(['changeAuthor']),
+      loadData(){
+        //调用axios上传
+        this.$ajax.post(process.env.API_HOST+'/personal/getAdminInfo.do',{}).then(res => {
+          console.log(res);
+          let json = res.data
+          if(json.status != 0) return;
+          this.info = json.data;
+
+        }).catch(function (error) {
+          console.log(error);
+        });
+      },
       //修改头像
       handleEditAuthor(){
         this.cropperModel = true;
-        this.$refs.child.changeCrop(200,200);//裁切大小
       },
       //图片上传成功
       handleUploadSuccess(data){
         this.cropperModel = false;
-        this.info.avatar = data.url;
+        let params = {
+          base64Code : data.url
+        };
+        this.$ajax.post(process.env.API_HOST+'/personal/uploadAdminHead.do',qs.stringify(params)).then(res => {
+          console.log(res);
+          let json = res.data
+          if(json.status != 0) return;
+          this.info.avatar = json.data;
+          this.changeAuthor(json.data);//全局保存头像
+
+        }).catch(function (error) {
+          console.log(error);
+        });
+
       },
-      //编辑
+      //校验登录密码成功
+      checkLogin(state){
+        if(state){
+          this.checkLoginModel = false;
+          this.editTelModel = true;
+        }
+      },
+      //修改手机号
+      handleTelEdit(label,name,value){
+        this.modelForm.label = label;
+        this.modelForm.name = name;
+        this.modelForm.changeName = value;
+        if(name == 'phone'){
+          this.checkLoginModel = true;
+        }else{
+          this.editTelModel = true;
+        }
+      },
+      editTelSubmit(tel){
+        let params = {};
+        params[this.modelForm.name] = tel;
+        this.$ajax.post(process.env.API_HOST+'/personal/updateAdminInfo.do',qs.stringify(params)).then(res => {
+          console.log(res);
+          let json = res.data
+          if(json.status != 0) return;
+          this.info[this.modelForm.name] = tel;
+          this.$message({
+            message: '修改成功',
+            type: 'success'
+          });
+          this.editTelModel = false;
+        }).catch(function (error) {
+          console.log(error);
+        });
+      },
+      //修改普通字段编辑
       handleEdit(label,name,value){
         this.modelActive = true;
         this.modelForm.label = label;
         this.modelForm.name = name;
         this.modelForm.changeName = value;
       },
-      //保存
+      //保存普通字段保存
       handleSubmit (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
             this.modelActive = false;
-            this.info[this.modelForm.name] = this.modelForm.changeName;
-            console.log('submit!');
+            let params = {};
+            params[this.modelForm.name] = this.modelForm.changeName;
+            this.$ajax.post(process.env.API_HOST+'/personal/updateAdminInfo.do',qs.stringify(params)).then(res => {
+              console.log(res);
+              let json = res.data
+              if(json.status != 0) return;
+              this.info[this.modelForm.name] = this.modelForm.changeName;
+              this.$message({
+                message: '修改成功',
+                type: 'success'
+              });
+            }).catch(function (error) {
+              console.log(error);
+            });
           } else {
             console.log('Fail!');
           }
@@ -235,7 +420,9 @@
       },
     },
     components:{
-      vueCropper
+      vueCropper,
+      checkLogin,
+      editTel
     }
   }
 </script>

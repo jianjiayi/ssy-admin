@@ -19,13 +19,16 @@
 </template>
 <script>
 
-  import searchForm from '@/components/searchForm'
+  import searchForm from '@/components/searchForm';
 
-  import tabPane from '@/components/tabpane'
+  import tabPane from '@/components/tabpane';
 
-  import goodsList from '@/components/lists/goodslist'
+  import goodsList from '@/components/lists/goodslist';
 
-  import pagination from '@/components/paging'
+  import pagination from '@/components/paging';
+
+  const qs = require('qs');
+
   export default {
     data() {
       return {
@@ -64,96 +67,144 @@
         ],
         tabActiveIndex:'所有',
 
-
         tabsStatus:8,
-        listData: [{
-          "id": 100000194,
-          "categoryId": 11000,
-          "adminId": 123,
-          "name": "bbb",
-          "subtitle": "bbb",
-          "mainImage": "bbb",
-          "status": 4,
-          "createTime": "2018-05-16 13:25:01",
-          "updateTime": "2018-05-16 14:01:17",
-          "subimages": "bbb",
-          "reserve": 1,
-          "catename": "主粮",
-          "nickname": "桃李小镇"
-        }, {
-          "id": 100000158,
-          "categoryId": 11000,
-          "adminId": 123,
-          "name": "123456",
-          "subtitle": "000",
-          "mainImage": "http://59.110.136.67:8082/APPMerchant/upload/admproductimg/91efe177-558b-48b2-9e01-712fd0de0360.jpg",
-          "status": 3,
-          "createTime": "2018-01-08 17:05:15",
-          "updateTime": "2018-05-16 10:26:22",
-          "subimages": "http://59.110.136.67:8082/APPMerchant/upload/admproductimg/fed90c2e-bedc-4f3a-9fa6-ec4f6c910848.jpg",
-          "reserve": 0,
-          "catename": "主粮",
-          "nickname": "桃李小镇"
-        }, {
-          "id": 100000156,
-          "categoryId": 25000,
-          "adminId": 122,
-          "name": "正宗四川腊肉",
-          "subtitle": "纯农家猪腿子肉，五花肉",
-          "mainImage": "http://59.110.136.67:8080/dwshop/upload/admproductimg/d7761609-f664-444a-ac63-6b17b2247e15.jpg",
-          "status": 0,
-          "createTime": "2018-03-15 14:01:21",
-          "updateTime": "2018-04-09 11:12:59",
-          "subimages": "http://59.110.136.67:8080/dwshop/upload/admproductimg/1fd34dfb-2297-4e1d-abf0-ec8c08b66740.jpg,http://59.110.136.67:8080/dwshop/upload/admproductimg/5256bd19-8e4e-4784-99f6-df68b893d676.jpg,http://59.110.136.67:8080/dwshop/upload/admproductimg/7ee2de4b-af17-42d0-a2ce-d08349d3f733.jpg,http://59.110.136.67:8080/dwshop/upload/admproductimg/95afda57-894a-4611-8051-2fda1dbd03b6.jpg,http://59.110.136.67:8080/dwshop/upload/admproductimg/0ddd7a9b-24f7-4771-8fa5-9cc33b3ca522.jpg",
-          "reserve": null,
-          "catename": "美食",
-          "nickname": "宜宾特产"
-        }, {
-          "id": 100000157,
-          "categoryId": 11000,
-          "adminId": 86,
-          "name": "0000",
-          "subtitle": "0000",
-          "mainImage": "http://59.110.136.67:8082/APPMerchant/upload/admproductimg/b7ca8c06-8913-481e-9921-75da0debe7b1.jpg",
-          "status": 0,
-          "createTime": "2017-12-29 13:11:57",
-          "updateTime": "2018-04-09 11:12:46",
-          "subimages": "http://59.110.136.67:8082/APPMerchant/upload/admproductimg/3ed32771-42e5-4b9f-b69b-44d9c518b5b9.jpg",
-          "reserve": 0,
-          "catename": "主粮",
-          "nickname": "山西省-老农"
-        }, {
-          "id": 100000122,
-          "categoryId": 14000,
-          "adminId": 104,
-          "name": "昭通红富士苹果",
-          "subtitle": "自然生长，不套袋，不打蜡，当天摘当天发",
-          "mainImage": "http://59.110.136.67:8080/dwshop/upload/admproductimg/64eb419d-0221-4c15-8048-b6ff664ebc49.jpg",
-          "status": 1,
-          "createTime": "2017-10-22 16:30:16",
-          "updateTime": "2018-04-03 09:42:04",
-          "subimages": "http://59.110.136.67:8080/dwshop/upload/admproductimg/46a6b6ad-70e0-426b-aa68-f490b1b35aff.jpg,http://59.110.136.67:8080/dwshop/upload/admproductimg/40223fc2-5f4d-4add-ba91-92a48cf4d104.jpg,http://59.110.136.67:8080/dwshop/upload/admproductimg/869d191a-a709-4054-b9e1-9992a8d2bbd8.jpg,http://59.110.136.67:8080/dwshop/upload/admproductimg/eac5dfb7-2510-4fd0-bf85-f5aecfc29151.jpg,http://59.110.136.67:8080/dwshop/upload/admproductimg/ddef4003-5b7d-474b-a7f3-35a67fed6097.jpg",
-          "reserve": 0,
-          "catename": "水果",
-          "nickname": "凤凰山"
-        }],
-        pageNums:20,//总页数
-        nowPages:1,//当前页
+        listData: [],
+        pageNums:'',//总页数
+        nowPages:'',//当前页
         currentPages : 1,
 
         searchform:[
           {
             value:'',
-            name:'productid',
+            name:'proid',
             label:'商品编号',
           },
           {
             value:'',
-            name:'productname',
+            name:'proname',
             label:'商品名称',
           }
         ],
         searchActive:false,
+        serachParams:{},
+      }
+    },
+    created(){
+      this.addData(this.tabsStatus,1);
+    },
+    methods:{
+      addData(status,n){
+        this.listLoading = true;
+        let params = {
+          status:status,
+          pageNum : n,//当前访问页数
+        };
+        this.$ajax.post(process.env.API_HOST+'/Product/SelectProListByStatus.do?',qs.stringify(params)).then(res => {
+          console.log(res)
+          this.listLoading = false;
+          let json = res.data
+
+          if(json.status==1 && json.msg=='商品列表为空'){
+            this.pageNums = '';true
+            this.listData = [];
+            return
+          };
+
+          let data = json.data
+          this.pageNums = data.pages;
+          this.listData = data.list;
+
+        }).catch(function (error) {
+          console.log(error);
+        });
+      },
+      //更新状态
+      updateStatus(form){
+        this.listLoading = true;
+        let params = {
+          status : form.status,//当前访问页数
+          proid:form.id,
+        }
+        let _this = this;
+        this.$ajax.post(process.env.API_HOST+'/Product/UpdateProductStatus.do',qs.stringify(params)).then(res => {
+          console.info(res);
+
+          _this.$set(_this.listData[form.index],'status',form.status);//更新 数据
+
+          _this.addData(_this.tabsStatus,_this.nowPages);
+
+          _this.listLoading = false;
+        }).catch(function (error) {
+          console.log(error);
+        });
+      },
+      //分页
+      changePaging(val){
+        this.currentPages = val;
+        this.nowPages = val;
+        this.searchActive == false ? this.addData(this.tabsStatus,val) : this.searchFormList(this.serachParams,val);
+      },
+      //分类
+      changeTableData(label){
+        console.log(label);
+        this.searchActive = false;//冻结搜索状态
+
+        this.currentPages = 1;//分页默认第一页
+
+        this.tabActiveIndex = label;//修改标签选中值
+
+        let tab = this.tabsOptions.find(n => n.label === label);
+        this.tabsStatus = tab.value;
+        this.addData(this.tabsStatus,1);//加载数据
+
+        //重置搜索状态
+        this.searchform.map(n => {
+          n.value = '';
+        });
+      },
+
+      //搜索
+      searchList(Form){
+        this.searchActive = true;//激活搜索状态
+
+        this.tabActiveIndex = this.tabsOptions[0].label;//激活标签所有
+
+        let i = 0;
+        Form.map(n => {
+          n.value == '' ? i++ : '';
+          if(n.value == ''&&n.name!='productname'){
+            this.serachParams[n.name] = 0;
+          }else{
+            this.serachParams[n.name] = n.value;
+          }
+        });
+
+        Form.length === i ? this.addData(8,1) : this.searchFormList(this.serachParams,1);
+      },
+      searchFormList(params,n){
+        this.listLoading = true;
+        params['pageNum'] = n;//搜索页数
+
+        this.$ajax.post(process.env.API_HOST+'/Product/SelectProdListByProname.do?',qs.stringify(params)).then(res => {
+          console.info(res);
+
+          if(res.data.status==1 && res.data.msg=='没有相关商品信息'){
+            this.listLoading = false;
+            this.pageNums = '';
+            this.listData = [];
+            this.tabsStatus = 1;//分类：1
+            return
+          };
+
+          let json = res.data.data;
+          this.pageNums = json.pages;
+          this.listData = json.list;
+          this.tabsStatus = 1;//分类：1
+
+          this.listLoading = false;
+        }).catch(function (error) {
+          console.log(error);
+        });
       }
     },
     components:{

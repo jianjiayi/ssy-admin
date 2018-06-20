@@ -2,10 +2,10 @@
   <div class="bg-body">
     <my-header></my-header>
     <div class="content container">
-      <step-bar :stepOptions="stepOption"></step-bar>
-      <div v-if="$route.name =='register'" class="register">
+      <step-bar :stepOptions="stepOption" :active="stepOptionActive"></step-bar>
+      <div v-if="$route.name =='register'" class="register" >
         <div class="form">
-          <el-form ref="formValidate" :model="formValidate" :rules="ruleValidate" label-width="80px">
+          <el-form ref="formValidate" :model="formValidate" :rules="ruleValidate" label-width="80px" @keyup.enter.native="handleSubmit('formValidate')">
             <el-form-item label="用户名" prop="name">
               <el-input v-model="formValidate.name" placeholder="输入用户名"></el-input>
             </el-form-item>
@@ -27,7 +27,7 @@
               </div>
             </el-form-item>
             <el-form-item>
-              <el-button class="submit-btn" type="primary" @click="handleSubmit('formValidate')">注册</el-button>
+              <el-button class="submit-btn" type="primary" @click="handleSubmit('formValidate')" :loading="isBtnLoading">{{btnText}}</el-button>
             </el-form-item>
             <el-form-item style="text-align: center">
               <router-link to="/login">已有账号？登录</router-link>
@@ -43,10 +43,15 @@
   </div>
 </template>
 <script>
+
   import myHeader from '@/components/layout/header1.vue';
   import myFooter from '@/components/layout/footer.vue';
 
   import stepBar from '@/components/step-bar.vue';
+
+  const qs = require('qs');
+
+  const async = require('async');
 
   export default {
     data () {
@@ -68,9 +73,10 @@
       };
 
       return {
+        isBtnLoading: false,
         //步骤条参数
         stepOption:{
-          active:1,//激活选项
+          active:0,//激活选项
           options:[
             {
               title:'注 册',
@@ -111,7 +117,7 @@
           ],
           password: [
             { required: true, message: '请输入密码', trigger: 'blur' },
-            { type: 'string', min: 6, message: '请设置至少6位密码', trigger: 'blur' }
+            { type: 'string', min: 6, max:6, message: '请设置6位密码', trigger: 'blur' }
           ],
           password2: [
             { required: true, message: '请再次输入密码', trigger: 'blur' },
@@ -127,6 +133,29 @@
         }
       }
     },
+
+    computed: {
+      btnText() {
+        if (this.isBtnLoading) return '正在注册...';
+        return '立即注册';
+      },
+      stepOptionActive(){
+        switch(this.$route.name){
+          case('register'):
+            return 0;
+            break;
+          case('qualification'):
+            return 1;
+            break;
+          case('auditStatus'):
+            return 2;
+            break;
+          case('editAptitude'):
+            return 2;
+            break;
+        }
+      }
+    },
     methods:{
       //获取验证码倒计时
       handleSendCode(){
@@ -134,13 +163,12 @@
         if (!this.timer){
           this.count = TIME_COUNT;
           this.isDisabled = true;
+          this.getMessageCode();//调用获取验证码
 
           this.timer = setInterval(() =>{
             if(this.count > 0 && this.count <= TIME_COUNT){
               this.count--;
               this.codeText = this.count+"秒后重新发送";
-
-              this.getMessageCode();//调用获取验证码
 
             }else{
               this.codeText = "点击发送验证码"
@@ -153,15 +181,76 @@
       },
       //获取短信验证码
       getMessageCode(){
+        let params = {
+          phone:this.formValidate.phone
+        };
+        this.$ajax.post(process.env.API_HOST+'/personal/sendCode.do',qs.stringify(params)).then(res => {
+          console.log(res)
+          let json = res.data
+          if(json.status != 0) return;
 
+        }).catch(function (error) {
+          console.log(error);
+        });
       },
       //提交表单
       handleSubmit (name) {
+        let _this = this;
         this.$refs[name].validate((valid) => {
           if (valid) {
-            console.log('Success!');
-            this.stepOption.active = 2;
-            this.$router.push({name:'qualification'});
+            _this.isBtnLoading = true;
+            async.waterfall([
+              function(callback) {
+                let params = {
+                  phone:_this.formValidate.phone,
+                  c:_this.formValidate.code
+                };
+                return _this.$ajax.post(process.env.API_HOST+'/personal/chickCode.do',qs.stringify(params)).then(res => {
+                  console.log(res)
+                  let json = res.data
+                  //验证码失效
+                  if(json.status != 0){
+                    _this.isBtnLoading = false;
+                    return;
+                  }
+                  callback(null, json);
+                }).catch(function (error) {
+                  console.log(error);
+                  return alert('')
+                });
+              },
+              function(arg1, callback) {
+                console.log(arg1); // 1
+                let params = {
+                  admname:_this.formValidate.name,
+                  password:_this.formValidate.password,
+                  phone:_this.formValidate.phone
+                };
+                _this.$ajax.post(process.env.API_HOST+'/personal/PersonalRegister.do',qs.stringify(params)).then(res => {
+                  console.log(res)
+                  let json = res.data
+                  if(json.status != 0){
+                    _this.isBtnLoading = false;
+                    return;
+                  }
+                  _this.$message({
+                    message: '注册成功，请完善资质信息',
+                    type: 'success'
+                  });
+                  callback(null, json);
+
+                }).catch(function (error) {
+                  console.log(error);
+                });
+
+              }
+            ], function (err, result) {
+              // 执行的任务中方法回调err参数时，将被传递至本方法的err参数
+              // 参数result为最后一个方法的回调结果'done'
+              console.log(result) // 2
+              _this.isBtnLoading = false;
+              _this.$router.push({name:'qualification',query:{id:result.data}});
+            });
           } else {
             console.log('Fail!');
           }
@@ -176,6 +265,7 @@
 <style scoped lang="scss">
   .bg-body{
     background: #d7deda;
+    min-width: 1190px;
     padding-top: 100px;
     .content{
       min-height: 700px;

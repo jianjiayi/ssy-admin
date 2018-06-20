@@ -13,6 +13,7 @@
     <el-upload
       v-show="uploadList.length==0"
       :name="name"
+      :show-file-list="false"
       :before-upload="beforeUpload"
       :on-success="handleSuccess"
       :action="action">
@@ -36,7 +37,7 @@
     props:['options','name','src','title'],
     data () {
       return {
-        action:'http://192.168.8.189:8082/NewDwShop/verfile/verupload.do',//上传地址
+        action:'http://192.168.1.188:8082/NewDwShop/verfile/verupload.do',//上传地址
 
         imgName: '',//查看图片
         visible: false,
@@ -46,10 +47,16 @@
     created(){
       this.getImgArray(this.src);//获取传递 图片 string
     },
+    watch:{
+      src(val,oldval){
+        this.getImgArray(this.src);//获取传递 图片 string
+      }
+    },
     methods: {
       getImgArray(string){//格式化成数组
         let array = (string||"").split(',');
         if(array[0]=='') return;
+        this.uploadList = [];
         array.map(n => {
           this.uploadList.push({
             name :this.name,
@@ -65,7 +72,6 @@
       //删除图片
       handleRemove(file) {
         this.uploadList.splice(this.uploadList.indexOf(file), 1);
-        console.log(this.uploadList)
         this.$emit('on-remove',file)
       },
       beforeUpload(file){
@@ -93,7 +99,6 @@
       },
       //上传成功
       handleSuccess (res, file) {
-        console.log('res:'+res,file);
         this.uploadList.push({
           name :this.name,
           url : res.replace('[','').replace(']','').split(',')[1]

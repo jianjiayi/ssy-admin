@@ -11,7 +11,7 @@
     <tab-pane :tabs="tabsOptions" :activeLabel="tabActiveIndex" @changeTabs="changeTableData"></tab-pane>
 
     <!--列表-->
-    <orders-list :listTableData="listData" @updateRow="updateStatus" @lookLogistics="Logistics"></orders-list>
+    <orders-list :listTableData="listData" @sendGoods="sendGoods" @lookLogistics="Logistics"></orders-list>
 
     <!--分页-->
     <pagination :numbers="pageNums" :currentPage="currentPages" @currentChange="changePaging"></pagination>
@@ -22,22 +22,31 @@
       :visible.sync="logisticsDialogVisible"
       width="600px"
       center>
-      <logistics-details :logisticsInfo="logisticsData"></logistics-details>
+      <order-wuliu :orderUser="orderUser" :logistics="logisticsData"></order-wuliu>
+      <!--<logistics-details :logisticsInfo="logisticsData"></logistics-details>-->
+    </el-dialog>
+
+    <!--物流-->
+    <el-dialog
+      title="确认发货"
+      :visible.sync="sedGoodsVisible"
+      width="450px"
+      center>
+      <send-goods :ordersExpress="orderExpress" :orderInfo="orderInfo" @sendGoodsSubmit="sendGoodsSubmit"></send-goods>
     </el-dialog>
 
   </section>
 </template>
 <script>
+  import searchForm from '@/components/searchForm';
+  import tabPane from '@/components/tabpane';
+  import ordersList from '@/components/lists/orderslist';
+  import pagination from '@/components/paging';
+  import orderWuliu from '@/views/details/order/order-wuliu.vue';
+  import logisticsDetails from '@/components/details/logisticsDetails';
+  import sendGoods from  '@/components/send-goods.vue';
 
-  import searchForm from '@/components/searchForm'
-
-  import tabPane from '@/components/tabpane'
-
-  import ordersList from '@/components/lists/orderslist'
-
-  import pagination from '@/components/paging'
-
-  import logisticsDetails from '@/components/details/logisticsDetails'
+  const qs = require('qs');
 
   export default {
     data() {
@@ -78,147 +87,28 @@
         tabActiveIndex:'所有',
 
         tabsStatus:1,
-        listData: [{
-          "orderNo": "1711291450992427",
-          "userId": 75,
-          "shippingId": 237,
-          "payment": 88,
-          "paymentType": 1,
-          "postage": 0,
-          "status": 50,
-          "paymentTime": "2018-05-01 14:48:18",
-          "sendTime": "2018-02-01 14:48:48",
-          "endTime": "2018-05-05 14:49:08",
-          "closeTime": "",
-          "createTime": "2018-05-01 14:48:18",
-          "updateTime": "2018-05-05 14:49:08",
-          "expressname": null,
-          "expressno": null,
-          "adminId": 104,
-          "nickname": "凤凰山",
-          "admphone": "13308703309",
-          "admnum": "1709232303819798",
-          "username": "789",
-          "userphone": "15639319193",
-          "receivername": "欣悦",
-          "phoneNum": "",
-          "address": "天津市天津市和平区北京",
-          "orderManageVo": [{
-            "orderNo": "1711291450992427",
-            "productName": "昭通红富士苹果",
-            "adminId": 104,
-            "productId": 100000122,
-            "productImage": "http://59.110.136.67:8080/dwshop/upload/admproductimg/64eb419d-0221-4c15-8048-b6ff664ebc49.jpg",
-            "currentUnitPrice": 88,
-            "quantity": 1,
-            "totalPrice": 88,
-            "spec": "24个中果/盒",
-            "createTime": 1525330240000,
-            "updateTime": 1525928827000,
-            "setStatus": 1
-          }, {
-            "orderNo": "1711291450992427",
-            "productName": "昭通红富士苹果",
-            "adminId": 104,
-            "productId": 100000122,
-            "productImage": "http://59.110.136.67:8080/dwshop/upload/admproductimg/64eb419d-0221-4c15-8048-b6ff664ebc49.jpg",
-            "currentUnitPrice": 88,
-            "quantity": 1,
-            "totalPrice": 88,
-            "spec": "24个中果/盒",
-            "createTime": 1525330240000,
-            "updateTime": 1525928827000,
-            "setStatus": 1
-          }]
-        }, {
-          "orderNo": "1711291450566288",
-          "userId": 75,
-          "shippingId": 237,
-          "payment": 16,
-          "paymentType": 1,
-          "postage": 0,
-          "status": 50,
-          "paymentTime": "2018-05-01 14:48:18",
-          "sendTime": "2018-02-01 14:48:48",
-          "endTime": "2018-05-05 14:49:08",
-          "closeTime": "",
-          "createTime": "2018-05-01 14:48:18",
-          "updateTime": "2018-05-05 14:49:08",
-          "expressname": null,
-          "expressno": null,
-          "adminId": 104,
-          "nickname": "凤凰山",
-          "admphone": "13308703309",
-          "admnum": "1709232303819798",
-          "username": "789",
-          "userphone": "15639319193",
-          "receivername": "欣悦",
-          "phoneNum": "",
-          "address": "天津市天津市和平区北京",
-          "orderManageVo": [{
-            "orderNo": "1711291450566288",
-            "productName": "昭通脆皮核桃",
-            "adminId": 104,
-            "productId": 100000124,
-            "productImage": "http://59.110.136.67:8080/dwshop/upload/admproductimg/d193297f-69cf-43df-88d7-4182d0123a1d.jpg",
-            "currentUnitPrice": 16,
-            "quantity": 1,
-            "totalPrice": 16,
-            "spec": "500g/袋",
-            "createTime": 1525243811000,
-            "updateTime": 1525928827000,
-            "setStatus": 1
-          }]
-        }, {
-          "orderNo": "1710181447494547",
-          "userId": 75,
-          "shippingId": 237,
-          "payment": 0.02,
-          "paymentType": 1,
-          "postage": 0,
-          "status": 50,
-          "paymentTime": "2018-05-01 14:48:18",
-          "sendTime": "2018-02-01 14:48:48",
-          "endTime": "2018-05-05 14:49:08",
-          "closeTime": "",
-          "createTime": "2018-05-01 14:48:18",
-          "updateTime": "2018-05-05 14:49:08",
-          "expressname": "pingyou",
-          "expressno": "13131",
-          "adminId": 99,
-          "nickname": "北京市-老农",
-          "admphone": "15239200618",
-          "admnum": "1709152350982868",
-          "username": "789",
-          "userphone": "15639319193",
-          "receivername": "欣悦",
-          "phoneNum": "",
-          "address": "天津市天津市和平区北京",
-          "orderManageVo": [{
-            "orderNo": "1710181447494547",
-            "productName": "玫瑰香",
-            "adminId": 99,
-            "productId": 100000116,
-            "productImage": "http://59.110.136.67:8080/dwshop/upload/admproductimg/795956a1-406c-4a5a-a7c4-921cb1abc1b8.jpg",
-            "currentUnitPrice": 0.02,
-            "quantity": 1,
-            "totalPrice": 0.02,
-            "spec": "1kg/盒",
-            "createTime": 1525330070000,
-            "updateTime": 1525928740000,
-            "setStatus": 1
-          }]
-        }],
-        pageNums:20,//总页数
-        nowPages:1,//当前页
+        listData: [],
+        pageNums:'',//总页数
+        nowPages:'',//当前页
         currentPages : 1,
 
+        //物流
         logisticsDialogVisible:false,
-        logisticsData:{
-          orderInfo:{},
-          body:{}
+        orderUser:{},
+        logisticsData:{},
+        //发货
+        sedGoodsVisible:false,
+        orderExpress:{
+          orderNo:'',
+          expressName:'',
+          expressNo:'',
+        },
+        orderInfo:{
+          oIndex :'',
+          oStatus: '',
         },
 
+        //搜索
         searchform:[
           {
             value:'',
@@ -239,13 +129,151 @@
         searchActive:false,
       }
     },
+    created(){
+      this.addData(1,this.tabsStatus);
+    },
+    methods:{
+      //加载数据
+      addData(n,status){
+        this.listLoading = true;
+        let params = {
+          pageNum : n,//当前访问页数
+          statusNum:status,
+        }
+        this.$ajax.post(process.env.API_HOST+'/order/selectAdminOrderList.do?',qs.stringify(params)).then(res => {
+          console.info(res);
 
+          if(res.data.status==1 && res.data.msg=='没有相关订单'){
+            this.listLoading = false;
+            this.pageNums = '';
+            this.listData = [];
+            return
+          };
+
+          this.listLoading = false;
+          let json = res.data.data;
+          this.pageNums = json.pages;
+          this.listData = json.list;
+        }).catch(function (error) {
+          console.log(error);
+        });
+      },
+      Logistics(orderData){
+        this.logisticsDialogVisible = true;
+        this.orderUser = {
+          orderNo: orderData.orderNo,
+          name: orderData.receivername,
+          phone: orderData.userphone,
+          adress: orderData.address,
+          img:orderData.orderManagemesVo[0].productImage,
+          num:orderData.orderManagemesVo.length
+        };
+        let params = {
+          orderNo:orderData.orderNo
+        }
+        this.$ajax.post(process.env.API_HOST+'/order/selectexpressByOrderNo.do?',qs.stringify(params)).then(res => {
+          console.info('res:'+JSON.stringify(res));
+          this.logisticsData = res.data.data.showapi_res_body;
+        }).catch(function (error) {
+          console.log(error);
+        });
+      },
+      //发货
+      sendGoods(form){
+        this.sedGoodsVisible = true;
+        this.orderExpress = {
+          orderNo:form.data.orderNo,
+          expressName:form.data.expressname,
+          expressNo:form.data.expressno,
+        };
+        console.log(this.orderExpress)
+        this.orderInfo = {
+          oIndex :form.index,
+          oStatus: form.status,
+        }
+      },
+      sendGoodsSubmit(status){
+        this.sedGoodsVisible = false;
+        if(status == 0){
+          this.$set(this.listData[this.orderInfo.oIndex],'status',40);//更新 数据
+
+          this.addData(this.nowPages,this.tabsStatus);
+        }
+      },
+      //分页
+      changePaging(val){
+        this.currentPages = val;
+        this.nowPages = val;
+        this.searchActive == false ? this.addData(val,this.tabsStatus) : this.searchFormList(val,this.serachParams);
+      },
+      //分类
+      changeTableData(label){
+        console.log(label);
+        this.searchActive = false;//冻结搜索状态
+
+        this.currentPages = 1;//分页默认第一页
+
+        this.tabActiveIndex = label;//修改标签选中值
+
+        let tab = this.tabsOptions.find(n => n.label === label);
+        this.tabsStatus = tab.value;
+        this.addData(1,this.tabsStatus);//加载数据
+
+        //重置搜索状态
+        this.searchform.map(n => {
+          n.value = '';
+        });
+      },
+
+      //搜索
+      searchList(Form){
+        this.searchActive = true;//激活搜索状态
+
+        this.tabActiveIndex = this.tabsOptions[0].label;//激活标签所有
+
+        let i = 0;
+        Form.map(n => {
+          n.value == '' ? i++ : '';
+          this.serachParams[n.name] = n.value;
+        });
+
+        Form.length === i ? this.addData(1,1) : this.searchFormList(1,this.serachParams);
+      },
+      searchFormList(n,params){
+        this.listLoading = true;
+        params['pageNum'] = n;//搜索页数
+
+        this.$ajax.post(process.env.API_HOST+'/order/SelectOrderMes.do',qs.stringify(params)).then(res => {
+          console.info(res);
+
+          if(res.data.status==1 && res.data.msg=='没有相关订单信息'){
+            this.listLoading = false;
+            this.pageNums = '';
+            this.listData = [];
+            this.tabsStatus = 1;//分类：1
+            return
+          };
+
+          let json = res.data.data;
+          this.pageNums = json.pages;
+          this.listData = json.list;
+
+          this.tabsStatus = 1;//分类：1
+
+          this.listLoading = false;
+        }).catch(function (error) {
+          console.log(error);
+        });
+      }
+    },
     components:{
       ordersList,
       searchForm,
       tabPane,
       pagination,
-      logisticsDetails
+      orderWuliu,
+      logisticsDetails,
+      sendGoods
     }
   }
 </script>

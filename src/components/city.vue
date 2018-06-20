@@ -11,12 +11,12 @@
     props:['modelCity'],
     data () {
       return {
-        model:this.modelCity,
+        model:["120000", "120100", "120101"],
         data: city
       }
     },
     created(){
-      console.log(this.modelCity)
+      this.model = this.modelCity;
     },
     watch:{
       modelCity(val,oldval){

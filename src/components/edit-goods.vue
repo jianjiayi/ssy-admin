@@ -114,13 +114,13 @@
       </el-form-item>
       <el-form-item label="商品价格" prop="price">
         <div class="item-container">
-          <el-input style="width: 195px" v-model="formValidate.price" placeholder="请输入商品价格"></el-input>元
+          <el-input style="width: 195px" v-model.number="formValidate.price" placeholder="请输入商品价格"></el-input> &nbsp;&nbsp;元
         </div>
       </el-form-item>
       <el-form-item label="规格" prop="spec">
         <div class="item-container">
           <div class="item-content">
-            <el-input style="width: 210px" v-model="formValidate.spec" placeholder="请输入数量"></el-input>
+            <el-input style="width: 210px" v-model.number="formValidate.spec" placeholder="请输入数量"></el-input>
             <el-select v-model="specVal" placeholder="KG">
               <el-option
                 v-for="item in specModel"
@@ -143,14 +143,14 @@
       </el-form-item>
       <el-form-item label="库存数量" prop="stock">
         <div class="item-container">
-          <el-input v-model="formValidate.stock" placeholder="请输入库存数量"></el-input>
+          <el-input style="width: 200px" v-model.number="formValidate.stock" placeholder="请输入库存数量"></el-input> &nbsp;&nbsp;件
         </div>
       </el-form-item>
 
       <el-form-item label="邮费" :prop="!single ? 'postage' : ''">
         <div class="item-container">
           <div class="item-content">
-            <el-input style="width: 200px" :disabled="single" v-model="formValidate.postage" placeholder="请输入邮费"></el-input>元
+            <el-input style="width: 200px" :disabled="single" v-model.number="formValidate.postage" placeholder="请输入邮费"></el-input> &nbsp;&nbsp;元
             <div class="check-box">
               <el-checkbox v-model="single">包邮</el-checkbox>
             </div>
@@ -171,7 +171,7 @@
           <el-form-item v-if="formValidate.conditionalMail==='1'" label="满" prop="enoughNum">
             <div class="item-container">
               <div class="item-content">
-                <el-input v-model="formValidate.enoughNum" placeholder="请输入数量"></el-input>
+                <el-input v-model.number="formValidate.enoughNum" placeholder="请输入数量"></el-input>
                 <span style="width: 100px">&nbsp;&nbsp;&nbsp;件包邮</span>
               </div>
             </div>
@@ -179,7 +179,7 @@
           <el-form-item v-if="formValidate.conditionalMail==='2'" label="满" prop="enoughMoney">
             <div class="item-container">
               <div class="item-content">
-                <el-input v-model="formValidate.enoughMoney" placeholder="请输入钱数"></el-input>
+                <el-input v-model.number="formValidate.enoughMoney" placeholder="请输入钱数"></el-input>
                 <span style="width: 100px">&nbsp;&nbsp;&nbsp;元包邮</span>
               </div>
             </div>
@@ -197,7 +197,7 @@
       <div v-if="formValidate.reserve==='1'">
         <el-form-item label="预售数量" prop="reserveNum">
           <div class="item-container">
-            <el-input style="width: 200px" v-model="formValidate.reserveNum" placeholder="预售商品数量"></el-input>
+            <el-input style="width: 200px" v-model.number="formValidate.reserveNum" placeholder="预售商品数量"></el-input>
           </div>
         </el-form-item>
         <el-form-item label="预售时间" prop="reserveDays">
@@ -206,6 +206,7 @@
             type="datetime"
             placeholder="选择日期"
             :default-value="timeDefaultShow"
+            value-format="timestamp"
             :picker-options="pickerOptions">
           </el-date-picker>
         </el-form-item>
@@ -215,7 +216,7 @@
       <!--富文本-->
       <el-form-item label="商品详情">
         <div class="editor-container" style="line-height: 20px">
-          <UE :defaultMsg=defaultMsg :config=config ref="ue"></UE>
+          <UE :defaultMsg=formValidate.detail :config=config ref="ue"></UE>
         </div>
       </el-form-item>
 
@@ -252,8 +253,28 @@
   import UE from '@/components/Ueditor.vue';
 
   export default {
-    props:['formdata'],
+    props:['formData'],
     data() {
+      let validateReserveNum = (rule, value, callback) => {
+        if (this.formValidate.reserve==1) {
+          if(this.formValidate.stock==''||this.formValidate.stock==0){
+            callback(new Error('请输入商品库存数量!'));
+          }else if(this.formValidate.reserveNum>this.formValidate.stock){
+            callback(new Error('预售商品数量不能超过库存数量!'));
+          }else{
+            callback();
+          }
+        } else {
+          callback();
+        }
+      };
+      let moreThanZero = (rule, value, callback) => {
+        if (value<=0) {
+          callback(new Error('不合法，请重新输入'));
+        } else {
+          callback();
+        }
+      };
       return {
         switchVideo: false,//是否上传视频
         categoryModel: category,//商品分类
@@ -352,8 +373,8 @@
         },
         //播放视频
         playoptions:{
-          src: this.formdata.video,
-          poster: this.formdata.videocove//你的封面地址
+          src: this.formData.video,
+          poster: this.formData.videocove//你的封面地址
         },
 //        playoptions:{
 //          src: this.formdata.video,
@@ -409,16 +430,24 @@
             {required: true, message: '请选择商品类目', trigger: 'change'}
           ],
           price: [
-            {required: true, message: '请输入价格', trigger: 'blur'}
+            {required: true, message: '请输入价格', trigger: 'blur'},
+            { type: 'number', message: '数去类型为数字值',trigger: 'blur'},
+            { validator: moreThanZero, trigger: 'blur' },
           ],
           stock: [
-            {required: true, message: '请输入库存', trigger: 'blur'}
+            {required: true, message: '请输入库存', trigger: 'blur'},
+            { type: 'number', message: '数去类型为数字值',trigger: 'blur'},
+            { validator: moreThanZero, trigger: 'blur' },
           ],
           postage: [
-            {required: true, message: '请输入运费', trigger: 'blur'}
+            {required: true, message: '请输入运费', trigger: 'blur'},
+            { type: 'number', message: '数去类型为数字值',trigger: 'blur'},
+            { validator: moreThanZero, trigger: 'blur' },
           ],
           spec: [
-            {required: true, message: '请输入规格', trigger: 'blur'}
+            {required: true, message: '请输入规格', trigger: 'blur'},
+            { type: 'number', message: '数去类型为数字值',trigger: 'blur'},
+            { validator: moreThanZero, trigger: 'blur' },
           ],
           districtId: [
             {required: true, message: '请选择省市区县', trigger: 'change'}
@@ -427,25 +456,32 @@
             {required: true, message: '请选择包邮条件', trigger: 'blur'}
           ],
           enoughNum: [
-            {required: true, message: '请输入满多少件包邮', trigger: 'blur'}
+            {required: true, message: '请输入满多少件包邮', trigger: 'blur'},
+            { type: 'number', message: '数去类型为数字值',trigger: 'blur'},
+            { validator: moreThanZero, trigger: 'blur' },
           ],
           enoughMoney: [
-            {required: true, message: '请输入满多少钱包邮', trigger: 'blur'}
+            {required: true, message: '请输入满多少钱包邮', trigger: 'blur'},
+            { type: 'number', message: '数去类型为数字值',trigger: 'blur'},
+            { validator: moreThanZero, trigger: 'blur' },
           ],
           nocityMail: [
             {required: true, message: '请选择不包邮地区', trigger: 'blur'}
           ],
           reserveNum: [
-            {required: true, message: '请输入预定数量', trigger: 'blur'}
+            {required: true, message: '请输入预售数量', trigger: 'blur'},
+            { type: 'number', message: '数去类型为数字值',trigger: 'blur'},
+            { validator: moreThanZero, trigger: 'blur' },
+            { validator: validateReserveNum, trigger: 'blur' }
           ],
           reserveDays: [
-            {required: true, message: '请选择预定天数', trigger: 'blur'}
+            {required: true, message: '请选择预售时间', trigger: 'blur'}
           ],
         }
       };
     },
     created(){
-      this.formValidate=this.formdata;
+      this.formValidate=this.formData;
       //加载格式化附图成数组
       let str = this.formValidate.subImages;
       if(str!=''){
@@ -463,10 +499,50 @@
       console.log('switchPostage:'+this.switchPostage)
     },
     watch:{
+      formData(val,oldval){
+        console.log(val,oldval)
+        this.formValidate=this.formData;
+        //加载格式化附图成数组
+        let str = this.formValidate.subImages;
+        if(str!=''){
+          str.split(',').map(n => {
+            this.subImagesArray.push({
+              name:'subimg',
+              url:n
+            })
+          })
+        };
+        //检查是否上传视频
+        this.formValidate.videocove != '' ? this.switchVideo = true : this.switchVideo = false;
+        //检查是否条件包邮条件
+        this.formValidate.conditionalMail == 0 ? this.switchPostage = false : this.switchPostage = true;
+
+        //商品类目
+        category.map(n => {
+          if(n.value == this.formValidate.categoryId){
+            return this.formValidate.categoryId = n.label
+          }
+        });
+
+        //产地
+        this.cityModel = [this.formValidate.districtId+'',this.formValidate.city+'',this.formValidate.county+''];
+        //规格模块
+        let specArr =this.formValidate.spec.replace(/\d+/g,'').split('/');
+        this.specVal = specArr[0];
+        this.unitVal = specArr[1];
+        let num = parseInt(this.formValidate.spec);
+        this.formValidate.spec =num;//数量
+
+        //检查是否包邮
+        this.formValidate.postage == 0 ? this.single = true : this.single = false;
+
+        //商品类型
+        this.formValidate.reserve = this.formValidate.reserve+'';
+      },
       //包邮复选框
       single(val,oldval){
         console.log('switchPostage:'+this.switchPostage)
-        val == true ? this.formValidate.postage = 1 : this.formValidate.postage = ''
+        val == true ? this.formValidate.postage = 0 : this.formValidate.postage = ''
       },
       //包邮条件滑块
       switchPostage(val,oldval){
@@ -565,9 +641,13 @@
         console.log(this.formValidate.postage)
         this.$refs[name].validate((valid) => {
           if (valid) {
-            this.$Message.success('Success!');
+            let form = {
+              info : this.formValidate,
+              content:this.getUEContent()
+            }
+            this.$emit('editSuccess',form)
           } else {
-            this.$Message.error('Fail!');
+            console.log('Fail!');
           }
         })
       },
@@ -579,7 +659,8 @@
 //          message: content,
 //          type: 'success'
 //        });
-        console.log(content)
+        console.log(content);
+        return content
       },
     },
     components:{

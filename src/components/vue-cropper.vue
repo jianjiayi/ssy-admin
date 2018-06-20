@@ -118,7 +118,7 @@
             fd.append(_this.Name,data,"image.jpg");
 
             //调用axios上传
-            this.$ajax.post('/profile/proupload.do',fd).then(res => {
+            this.$ajax.post(process.env.API_HOST+'/profile/proupload.do',fd).then(res => {
               console.info('res:'+JSON.stringify(res));
               let data = res.data.replace('[','').replace(']','').split(',');
               let imgInfo = {

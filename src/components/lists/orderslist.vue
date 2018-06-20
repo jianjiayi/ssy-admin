@@ -8,7 +8,7 @@
         label="宝贝"
         prop="id"
         header-align="center"
-        width="500px">
+        min-width="500px">
         <template slot-scope="scope">
           <!--订单top-->
           <div class="">
@@ -19,55 +19,59 @@
           <div>
             <!---->
             <el-row type="flex" class="row-bg">
-              <el-col :span="6">
-                <span><i class="fa fa-user-circle-o" aria-hidden="true"></i></span>
-                <router-link  :to="{path:'/review',query: {id:scope.row.adminId}}" target="_blank">
-                  {{scope.row.nickname}}
-                </router-link>
+              <el-col :span="14">
+
               </el-col>
-              <el-col :span="8">
-                <el-button type="text" size="small" class="tel">
-                  <i class="el-icon-phone"></i>:{{scope.row.admphone}}
-                </el-button>
-              </el-col>
-              <el-col :span="4">
-                <el-button type="text" size="small"  class="btn-text" @click.native="chat(scope.row.adminId)">
-                  <i class="fa fa-commenting-o" aria-hidden="true"></i>
-                </el-button>
-              </el-col>
-              <el-col :span="4">
+              <el-col :span="3">
                 <span class="mini-size">
                    单价
                 </span>
               </el-col>
-              <el-col :span="2">
+              <el-col :span="3">
                 <span class="mini-size">
                    数量
                 </span>
               </el-col>
+              <el-col :span="4">
+                <span class="mini-size">
+                   邮费
+                </span>
+              </el-col>
             </el-row>
             <!---->
-            <el-row type="flex" class="row-bg  product" v-for="(item,index) in scope.row.orderManageVo" :key="index">
-              <el-col :span="6">
+            <el-row type="flex" class="row-bg  product" v-for="(item,index) in scope.row.orderManagemesVo" :key="index">
+              <el-col :span="14" class="display-flex">
                 <span class="main-img">
                   <img v-show="item.productImage" :src="item.productImage" alt="暂无">
                 </span>
-              </el-col>
-              <el-col :span="12">
-                <div>
-                  <router-link  :to="{path:'/review',query: {id:item.productId}}" target="_blank">
-                    {{item.productName}}
-                  </router-link>
+                <div class="text">
+                  <div>
+                    <router-link  :to="{path:'/detial/goods',query: {id:item.productId}}" target="_blank">
+                      {{item.productName}}
+                    </router-link>
+                  </div>
+                  <div>
+                    <span v-if="item.conditionalMail==1">根据件数包邮 , 满  {{item.enoughNum}} 件包邮</span>
+                    <span v-else-if="item.conditionalMail==2">根据钱数包邮 , 满 {{item.enoughMoney}} 元包邮</span>
+                  </div>
                 </div>
               </el-col>
-              <el-col :span="4">
+              <el-col :span="3" class="item-center">
                 <span class="mini-size">
                   ￥{{item.currentUnitPrice}}
                 </span>
               </el-col>
-              <el-col :span="2">
+              <el-col :span="3" class="item-center">
                 <span class="mini-size">
                   × {{item.quantity}}
+                </span>
+              </el-col>
+              <el-col :span="4" class="item-center">
+                <span v-if="item.postage == 0 || item.postage == ''||item.postage == null" class="mini-size">
+                  包邮
+                </span>
+                <span v-else class="mini-size">
+                  ￥{{item.postage}}
                 </span>
               </el-col>
             </el-row>
@@ -80,8 +84,7 @@
         align="center">
         <template slot-scope="scope">
           ￥{{scope.row.payment}}
-          <div v-if="scope.row.postage!=0" class="mini-size">(含运费￥{{scope.row.postage}})</div>
-          <div v-else class="mini-size">包邮</div>
+          <div  class="mini-size">(含运费￥{{scope.row.postage}})</div>
         </template>
       </el-table-column>
       <el-table-column
@@ -149,19 +152,19 @@
         </template>
       </el-table-column>
       <el-table-column
-        fixed="right"
         label="操作"
-        width="80"
         align="center">
         <template slot-scope="scope">
           <el-dropdown>
             <el-button size="mini" icon="el-icon-edit"></el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>
-                <router-link :to="{path:'/orderDetails',query: {id:scope.row.orderNo}}" target="_blank">
+                <router-link :to="{path:'/detail/orders',query: {id:scope.row.orderNo}}" target="_blank">
                   查看
                 </router-link>
               </el-dropdown-item>
+              <el-dropdown-item v-show="scope.row.status == 20" @click.native="sendGoods(scope.$index,scope.row,20)">确定发货</el-dropdown-item>
+              <el-dropdown-item v-show="scope.row.status == 40" @click.native="sendGoods(scope.$index,scope.row,20)">修改物流</el-dropdown-item>
               <el-dropdown-item :disabled="scope.row.status != 20 ? true : false" @click.native="closeOrder(scope.$index,scope.row.orderNo)">强制结束</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -259,6 +262,15 @@
           duration:2000
         });
       },
+      sendGoods(pi,data,pn){
+        let form = {
+          index:pi,
+          data:data,
+          status:pn
+        };
+        console.log(form)
+        this.$emit('sendGoods',form);
+      },
       closeOrder(pi,pid,pn){
         let form = {
           index:pi,
@@ -299,6 +311,16 @@
   }
   .btn-text:hover{
     color: #3a8ee6;
+  }
+  .display-flex{
+    display: flex;
+    .text{
+      margin-left: 10px;
+    }
+  }
+  .item-center{
+    display: flex;
+    align-items: center;
   }
   .product{
     border-bottom: 1px dashed #b4bccc;

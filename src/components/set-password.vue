@@ -6,7 +6,7 @@
     :center="true"
     :show-close="false"
     >
-    <el-form  ref="setPassword" :model="setPassword" :rules="setPasswordRuleValidate" label-width="80px">
+    <el-form  ref="setPassword" :model="setPassword" :rules="setPasswordRuleValidate" label-width="80px" size="small">
       <el-form-item label="设置密码" prop="password1">
         <el-input v-model="setPassword.password1" placeholder="请输入密码"></el-input>
       </el-form-item>
@@ -39,7 +39,7 @@
         setPasswordRuleValidate: {
           password1: [
             { required: true, message: '请输入密码', trigger: 'blur' },
-            { type: 'string', min: 6, message: '请设置至少6位密码', trigger: 'blur' }
+            { type: 'string', min: 6, max:6, message: '请设置6位密码', trigger: 'blur' }
           ],
           password2: [
             { required: true, message: '请再次输入密码', trigger: 'blur' },
@@ -57,10 +57,9 @@
       handleSubmit (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
-            this.$Message.success('Success!');
             this.$emit('onOk',this.setPassword);
           } else {
-            this.$Message.error('Fail!');
+            console.log('error')
           }
         })
       },
